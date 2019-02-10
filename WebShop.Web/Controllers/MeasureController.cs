@@ -53,7 +53,7 @@ namespace WebShop.Web.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, [FromBody]Measure model)
+        public async Task<IActionResult> Update(int id, [FromBody]MeasureModel model)
         {
             var oldMeasure = this.ctx.Measures.FirstOrDefault(m => m.Id == id);
             if (oldMeasure == null)
@@ -87,6 +87,5 @@ namespace WebShop.Web.Controllers
 
             return BadRequest();
         }
-
     }
 }
