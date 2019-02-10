@@ -13,6 +13,6 @@ namespace WebShop.Models.Entities
 
         public DateTime Date { get; set; }
 
-        public HashSet<SaleItem> OrderLines { get; set; }
+        public HashSet<SaleItem> OrderLines { get; set; } = new HashSet<SaleItem>();
     }
 }
