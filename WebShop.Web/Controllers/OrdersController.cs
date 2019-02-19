@@ -1,9 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using WebShop.Data;
+using WebShop.Models.Entities;
+using WebShop.Web.ViewModels;
 
 namespace WebShop.Web.Controllers
 {
@@ -11,5 +17,111 @@ namespace WebShop.Web.Controllers
     [ApiController]
     public class OrdersController : ControllerBase
     {
+        private readonly WebShopContext ctx;
+        private readonly IMapper mapper;
+        private readonly string userId;
+
+        public OrdersController(WebShopContext ctx, IMapper mapper)
+        {
+            this.ctx = ctx;
+            this.mapper = mapper;
+            this.userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        }
+
+        [HttpGet]
+        public IActionResult Get()
+        {
+            var orders = mapper.Map<List<OrderModel>>(ctx.Orders.ToList());
+            return Ok(orders);
+        }
+
+        [HttpGet("{id}", Name = "OrderGet")]
+        public IActionResult Get(int id)
+        {
+            var order = mapper.Map<ProductModel>(ctx.Orders.FirstOrDefault(o => o.Id == id));
+            return Ok(order);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Create()
+        {
+            var order = new Order
+            {
+                AppUserId = userId,
+                Date = DateTime.UtcNow,
+            };
+
+            ctx.Orders.Add(order);
+            var basket = ctx.BasketItems.Include(b => b.Product).Where(i => i.AppUserId == userId);
+            foreach (var item in basket)
+            {
+                ctx.SaleItems.Add(new SaleItem
+                {
+                    Amount = item.Product.PricePerUnit * item.Units,
+                    ProductId = item.ProductId,
+                    Units = item.Units,
+                    MeasureId = item.Product.MeasureId,
+                    Order = order,
+                    //Cost = calculate costs
+                });
+            }
+
+            if (await this.ctx.SaveChangesAsync() > 0)
+            {
+                var url = Url.Link("OrderGet", new { id = order.Id });
+                return Created(url, order);
+            }
+
+            return BadRequest();
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update(int id, [FromBody]OrderModel model)
+        {
+            var oldOrder = this.ctx.Orders.FirstOrDefault(m => m.Id == id);
+            if (oldOrder == null)
+            {
+                return NotFound();
+            }
+
+            oldOrder.AppUserId = model.AppUserId;
+            oldOrder.Date = model.Date;
+            // delete here the old lines
+            oldOrder.OrderLines = Mapper.Map<HashSet<SaleItem>>(model.OrderLines);
+            
+            if (await this.ctx.SaveChangesAsync() > 0)
+            {
+                return Ok(oldOrder);
+            }
+
+            return BadRequest();
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var order = await ctx.Orders.FindAsync(id);
+            ctx.Orders.Remove(order);
+            var orderItems = this.ctx.SaleItems.Where(i => i.OrderId == id);
+            ctx.SaleItems.RemoveRange(orderItems);
+            foreach (var item in order.OrderLines)
+            {
+                ctx.Stock.Add(new StockEntry
+                {
+                    Amount = item.Amount,
+                    ProductId = item.ProductId,
+                    StockEntryType = StockEntryType.Increase,
+                    Units = item.Units,
+                    Date = DateTime.UtcNow
+                });
+            }
+
+            if (await this.ctx.SaveChangesAsync() > 0)
+            {
+                return Ok();
+            }
+
+            return BadRequest();
+        }
     }
 }

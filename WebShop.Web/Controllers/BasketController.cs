@@ -18,11 +18,13 @@ namespace WebShop.Web.Controllers
     {
         private readonly WebShopContext ctx;
         private readonly IMapper mapper;
+        private readonly string userId;
 
         public BasketController(WebShopContext ctx, IMapper mapper)
         {
             this.ctx = ctx;
             this.mapper = mapper;
+            this.userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         }
 
         [HttpGet]
@@ -38,7 +40,7 @@ namespace WebShop.Web.Controllers
         public IActionResult Get(int id)
         {
             var item = mapper.Map<BasketItemModel>(ctx.BasketItems
-                                                      .FirstOrDefault(b => b.Id == id && b.AppUserId == User.FindFirstValue(ClaimTypes.NameIdentifier)));
+                                                      .FirstOrDefault(b => b.Id == id && b.AppUserId == userId));
             return Ok(item);
         }
 
