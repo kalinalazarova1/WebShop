@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebShop.Data;
 using WebShop.Models.Entities;
@@ -11,6 +12,7 @@ using WebShop.Web.ViewModels;
 namespace WebShop.Web.Controllers
 {
     [Route("api/[controller]")]
+    [Authorize]
     [ApiController]
     public class StocksController : ControllerBase
     {
