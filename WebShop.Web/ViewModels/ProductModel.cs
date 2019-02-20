@@ -19,6 +19,8 @@ namespace WebShop.Web.ViewModels
 
         public decimal CurrentStock { get; set; }
 
+        public decimal CurrentCost { get; set; }
+
         public HashSet<Photo> Photos { get; set; }
     }
 }

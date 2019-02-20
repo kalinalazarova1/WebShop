@@ -21,6 +21,9 @@ namespace WebShop.Models.Entities
         [Column(TypeName = "decimal(18, 2)")]
         public decimal CurrentStock { get; set; }
 
+        [Column(TypeName = "decimal(18, 2)")]
+        public decimal CurrentCost { get; set; }
+
         public HashSet<Photo> Photos { get; set; } = new HashSet<Photo>();
     }
 }

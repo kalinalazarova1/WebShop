@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -29,6 +30,13 @@ namespace WebShop.Web.Controllers
             return Ok(items);
         }
 
+        [HttpGet("{productid}", Name = "StockEntryGetByProduct")]
+        public IActionResult GetByProduct(int productId)
+        {
+            var items = mapper.Map<StockEntryModel>(ctx.Stock.Where(s => s.ProductId == productId).OrderByDescending(s => s.Date));
+            return Ok(items);
+        }
+
         [HttpGet("{id}", Name = "StockEntryGet")]
         public IActionResult Get(int id)
         {
@@ -39,7 +47,10 @@ namespace WebShop.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromBody]StockEntryModel model)
         {
-            this.ctx.Add(mapper.Map<StockEntry>(model));
+            var entry = mapper.Map<StockEntry>(model);
+            entry.Date = DateTime.UtcNow;
+            this.ctx.Add(entry);
+            UpdateProductStock(model);
             if (await this.ctx.SaveChangesAsync() > 0)
             {
                 var url = Url.Link("StockEntryGet", new { id = model.Id });
@@ -49,26 +60,24 @@ namespace WebShop.Web.Controllers
             return BadRequest();
         }
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, [FromBody]StockEntryModel model)
+        private void UpdateProductStock(StockEntryModel stockEntry)
         {
-            var oldStockEntry = this.ctx.Stock.FirstOrDefault(m => m.Id == id);
-            if (oldStockEntry == null)
+            var product = ctx.Products.Find(stockEntry.ProductId);
+            switch (stockEntry.StockEntryType)
             {
-                return NotFound();
+                case StockEntryType.Buy:
+                case StockEntryType.Increase:
+                    product.CurrentStock += stockEntry.Units;
+                    product.CurrentCost += stockEntry.Amount;
+                    break;
+                case StockEntryType.Sell:
+                case StockEntryType.Decrease:
+                    product.CurrentStock -= stockEntry.Units;
+                    product.CurrentCost -= stockEntry.Amount;
+                    break;
+                default:
+                    throw new Exception("Unknown stock entry type");
             }
-
-            oldStockEntry.Amount = model.Amount;
-            oldStockEntry.Date = model.Date;
-            oldStockEntry.ProductId = model.ProductId;
-            oldStockEntry.StockEntryType = model.StockEntryType;
-            oldStockEntry.Units = model.Units;
-            if (await this.ctx.SaveChangesAsync() > 0)
-            {
-                return Ok(oldStockEntry);
-            }
-
-            return BadRequest();
         }
     }
 }

@@ -21,5 +21,7 @@ namespace WebShop.Web.ViewModels
         public decimal Units { get; set; }
 
         public decimal Amount { get; set; }
+
+
     }
 }

@@ -4,7 +4,6 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using AutoMapper;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebShop.Data;
@@ -31,14 +30,14 @@ namespace WebShop.Web.Controllers
         [HttpGet]
         public IActionResult Get()
         {
-            var orders = mapper.Map<List<OrderModel>>(ctx.Orders.ToList());
+            var orders = mapper.Map<List<OrderModel>>(ctx.Orders.Where(o => o.AppUserId == userId).ToList());
             return Ok(orders);
         }
 
         [HttpGet("{id}", Name = "OrderGet")]
         public IActionResult Get(int id)
         {
-            var order = mapper.Map<ProductModel>(ctx.Orders.FirstOrDefault(o => o.Id == id));
+            var order = mapper.Map<OrderModel>(ctx.Orders.FirstOrDefault(o => o.Id == id && o.AppUserId == userId));
             return Ok(order);
         }
 
@@ -62,36 +61,25 @@ namespace WebShop.Web.Controllers
                     Units = item.Units,
                     MeasureId = item.Product.MeasureId,
                     Order = order,
-                    //Cost = calculate costs
+                    Cost = (item.Product.CurrentCost / item.Product.CurrentStock) * item.Units
                 });
+
+                ctx.Stock.Add(new StockEntry
+                {
+                    Date = DateTime.UtcNow,
+                    ProductId = item.ProductId,
+                    StockEntryType = StockEntryType.Sell,
+                    Units = item.Units,
+                    Amount = (item.Product.CurrentCost / item.Product.CurrentStock) * item.Units
+                });
+
+                ctx.BasketItems.Remove(item);
             }
 
             if (await this.ctx.SaveChangesAsync() > 0)
             {
                 var url = Url.Link("OrderGet", new { id = order.Id });
                 return Created(url, order);
-            }
-
-            return BadRequest();
-        }
-
-        [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, [FromBody]OrderModel model)
-        {
-            var oldOrder = this.ctx.Orders.FirstOrDefault(m => m.Id == id);
-            if (oldOrder == null)
-            {
-                return NotFound();
-            }
-
-            oldOrder.AppUserId = model.AppUserId;
-            oldOrder.Date = model.Date;
-            // delete here the old lines
-            oldOrder.OrderLines = Mapper.Map<HashSet<SaleItem>>(model.OrderLines);
-            
-            if (await this.ctx.SaveChangesAsync() > 0)
-            {
-                return Ok(oldOrder);
             }
 
             return BadRequest();
@@ -108,7 +96,7 @@ namespace WebShop.Web.Controllers
             {
                 ctx.Stock.Add(new StockEntry
                 {
-                    Amount = item.Amount,
+                    Amount = item.Cost,
                     ProductId = item.ProductId,
                     StockEntryType = StockEntryType.Increase,
                     Units = item.Units,
