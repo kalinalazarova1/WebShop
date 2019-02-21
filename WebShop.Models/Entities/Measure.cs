@@ -1,9 +1,14 @@
-﻿namespace WebShop.Models.Entities
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
+
+namespace WebShop.Models.Entities
 {
     public class Measure
     {
-        public int Id { get; set; }
+        [ReadOnly(true)]
+        public int Id { get; private set; }
 
+        [Required]
         public string Symbol { get; set; }
     }
 }

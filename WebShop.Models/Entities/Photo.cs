@@ -1,8 +1,11 @@
-﻿namespace WebShop.Models.Entities
+﻿using System.ComponentModel;
+
+namespace WebShop.Models.Entities
 {
     public class Photo
     {
-        public int Id { get; set; }
+        [ReadOnly(true)]
+        public int Id { get; private set; }
 
         public int ProductId { get; set; }
 

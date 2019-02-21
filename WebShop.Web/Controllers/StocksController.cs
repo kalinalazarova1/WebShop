@@ -47,7 +47,7 @@ namespace WebShop.Web.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody]StockEntryModel model)
+        public async Task<IActionResult> Create([FromBody]StockEntryInputModel model)
         {
             var entry = mapper.Map<StockEntry>(model);
             entry.Date = DateTime.UtcNow;
@@ -55,14 +55,14 @@ namespace WebShop.Web.Controllers
             UpdateProductStock(model);
             if (await this.ctx.SaveChangesAsync() > 0)
             {
-                var url = Url.Link("StockEntryGet", new { id = model.Id });
+                var url = Url.Link("StockEntryGet", new { id = entry.Id });
                 return Created(url, model);
             }
 
             return BadRequest();
         }
 
-        private void UpdateProductStock(StockEntryModel stockEntry)
+        private void UpdateProductStock(StockEntryInputModel stockEntry)
         {
             var product = ctx.Products.Find(stockEntry.ProductId);
             switch (stockEntry.StockEntryType)

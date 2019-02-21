@@ -1,12 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 
 namespace WebShop.Models.Entities
 {
     public class Order
     {
-        public int Id { get; set; }
+        [ReadOnly(true)]
+        public int Id { get; private set; }
 
+        [Required]
         public string AppUserId { get; set; }
 
         public AppUser Buyer { get; set; }

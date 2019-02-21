@@ -1,10 +1,12 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace WebShop.Models.Entities
 {
     public class SaleItem
     {
-        public int Id { get; set; }
+        [ReadOnly(true)]
+        public int Id { get; private set; }
 
         public int OrderId { get; set; }
 

@@ -9,7 +9,7 @@ namespace WebShop.Web.MappingProfiles
         public MeasureProfile()
         {
             CreateMap<Measure, MeasureModel>();
-            CreateMap<MeasureModel, Measure>();
+            CreateMap<MeasureModel, Measure>().IgnoreAllPropertiesWithAnInaccessibleSetter();
         }
     }
 }

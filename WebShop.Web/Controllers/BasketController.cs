@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -32,7 +31,7 @@ namespace WebShop.Web.Controllers
         public IActionResult Get()
         {
             var items = mapper.Map<List<BasketItemModel>>(ctx.BasketItems
-                                                             .Where(b => b.AppUserId == User.FindFirstValue(ClaimTypes.NameIdentifier))
+                                                             .Where(b => b.AppUserId == userId)
                                                              .ToList());
             return Ok(items);
         }
@@ -48,9 +47,9 @@ namespace WebShop.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromBody]BasketItemModel model)
         {
-            this.ctx.Add(mapper.Map<BasketItem>(model));
-            model.AppUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (await this.ctx.SaveChangesAsync() > 0)
+            ctx.Add(mapper.Map<BasketItem>(model));
+            model.AppUserId = userId;
+            if (await ctx.SaveChangesAsync() > 0)
             {
                 var url = Url.Link("BasketItemGet", new { id = model.Id });
                 return Created(url, model);
@@ -62,7 +61,7 @@ namespace WebShop.Web.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody]BasketItemModel model)
         {
-            var oldBasketItem = this.ctx.BasketItems.FirstOrDefault(b => b.Id == id);
+            var oldBasketItem = ctx.BasketItems.FirstOrDefault(b => b.Id == id && b.AppUserId == userId);
             if (oldBasketItem == null)
             {
                 return NotFound();
@@ -71,7 +70,7 @@ namespace WebShop.Web.Controllers
             oldBasketItem.Amount = model.Amount;
             oldBasketItem.ProductId = model.ProductId;
             oldBasketItem.Units = model.Units;
-            if (await this.ctx.SaveChangesAsync() > 0)
+            if (await ctx.SaveChangesAsync() > 0)
             {
                 return Ok(oldBasketItem);
             }
@@ -82,7 +81,7 @@ namespace WebShop.Web.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var basketItem = this.ctx.BasketItems.FirstOrDefault(b => b.Id == id && b.AppUserId == User.FindFirstValue(ClaimTypes.NameIdentifier));
+            var basketItem = ctx.BasketItems.FirstOrDefault(b => b.Id == id && b.AppUserId == userId);
             if (basketItem == null)
             {
                 return NotFound();
@@ -100,7 +99,7 @@ namespace WebShop.Web.Controllers
         [HttpDelete]
         public async Task<IActionResult> ClearBasket()
         {
-            var basketItems = this.ctx.BasketItems.Where(b => b.AppUserId == User.FindFirstValue(ClaimTypes.NameIdentifier));
+            var basketItems = this.ctx.BasketItems.Where(b => b.AppUserId == userId);
             if (basketItems.Count() == 0)
             {
                 return NotFound();

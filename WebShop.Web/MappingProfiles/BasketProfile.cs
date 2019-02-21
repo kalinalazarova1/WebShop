@@ -9,7 +9,7 @@ namespace WebShop.Web.MappingProfiles
         public BasketProfile()
         {
             CreateMap<BasketItem, BasketItemModel>();
-            CreateMap<BasketItemModel, BasketItem>();
+            CreateMap<BasketItemModel, BasketItem>().IgnoreAllPropertiesWithAnInaccessibleSetter();
         }
     }
 }

@@ -1,12 +1,16 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace WebShop.Models.Entities
 {
     public class Product
     {
-        public int Id { get; set; }
+        [ReadOnly(true)]
+        public int Id { get; private set; }
 
+        [Required]
         public string Title { get; set; }
 
         public string Description { get; set; }

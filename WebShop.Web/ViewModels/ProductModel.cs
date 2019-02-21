@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using WebShop.Models.Entities;
 
 namespace WebShop.Web.ViewModels
 {
@@ -15,12 +14,10 @@ namespace WebShop.Web.ViewModels
 
         public int MeasureId { get; set; }
 
-        public Measure Measure { get; set; }
+        public MeasureModel Measure { get; set; }
 
         public decimal CurrentStock { get; set; }
 
-        public decimal CurrentCost { get; set; }
-
-        public HashSet<Photo> Photos { get; set; }
+        public HashSet<PhotoModel> Photos { get; set; } = new HashSet<PhotoModel>();
     }
 }

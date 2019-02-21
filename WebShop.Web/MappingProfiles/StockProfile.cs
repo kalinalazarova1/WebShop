@@ -8,8 +8,8 @@ namespace WebShop.Web.MappingProfiles
     {
         public StockProfile()
         {
-            CreateMap<StockEntryModel, StockEntry>();
-            CreateMap<StockEntry, StockEntryModel>();
+            CreateMap<StockEntryInputModel, StockEntry>();
+            CreateMap<StockEntry, StockEntryModel>().IgnoreAllPropertiesWithAnInaccessibleSetter();
         }
     }
 }

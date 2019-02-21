@@ -9,7 +9,7 @@ namespace WebShop.Web.MappingProfiles
         public ProductProfile()
         {
             CreateMap<Product, ProductModel>();
-            CreateMap<ProductModel, Product>();
+            CreateMap<ProductInputModel, Product>().IgnoreAllPropertiesWithAnInaccessibleSetter();
         }
     }
 }

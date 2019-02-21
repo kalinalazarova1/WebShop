@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace WebShop.Models.Entities
@@ -13,7 +14,8 @@ namespace WebShop.Models.Entities
 
     public class StockEntry
     {
-        public int Id { get; set; }
+        [ReadOnly(true)]
+        public int Id { get; private set; }
 
         public DateTime Date { get; set; }
 

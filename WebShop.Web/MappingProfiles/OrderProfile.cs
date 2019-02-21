@@ -9,7 +9,7 @@ namespace WebShop.Web.MappingProfiles
         public OrderProfile()
         {
             CreateMap<Order, OrderModel>();
-            CreateMap<OrderModel, Order>();
+            CreateMap<OrderModel, Order>().IgnoreAllPropertiesWithAnInaccessibleSetter();
         }
     }
 }

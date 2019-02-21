@@ -8,12 +8,12 @@
 
         public int ProductId { get; set; }
 
+        public ProductModel Product { get; set; }
+
         public decimal Units { get; set; }
 
         public int MeasureId { get; set; }
 
         public decimal Amount { get; set; }
-
-        public decimal Cost { get; set; }
     }
 }

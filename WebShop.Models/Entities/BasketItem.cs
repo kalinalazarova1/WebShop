@@ -1,15 +1,19 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace WebShop.Models.Entities
 {
     public class BasketItem
     {
-        public int Id { get; set; }
+        [ReadOnly(true)]
+        public int Id { get; private set; }
 
         public int ProductId { get; set; }
 
         public Product Product { get; set; }
 
+        [Required]
         public string AppUserId { get; set; }
 
         public AppUser Buyer { get; set; }

@@ -41,7 +41,7 @@ namespace WebShop.Web.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody]ProductModel model)
+        public async Task<IActionResult> Create([FromBody]ProductInputModel model)
         {
             var newProduct = mapper.Map<Product>(model);
             this.ctx.Add(newProduct);
@@ -55,7 +55,7 @@ namespace WebShop.Web.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, [FromBody]ProductModel model)
+        public async Task<IActionResult> Update(int id, [FromBody]ProductInputModel model)
         {
             var oldProduct = this.ctx.Products.FirstOrDefault(m => m.Id == id);
             if (oldProduct == null)
@@ -63,7 +63,6 @@ namespace WebShop.Web.Controllers
                 return NotFound();
             }
 
-            oldProduct.CurrentStock = model.CurrentStock;
             oldProduct.Description = model.Description;
             oldProduct.MeasureId = model.MeasureId;
             oldProduct.PricePerUnit = model.PricePerUnit;

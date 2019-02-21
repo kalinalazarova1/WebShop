@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace WebShop.Web.ViewModels
+﻿namespace WebShop.Web.ViewModels
 {
     public class BasketItemModel
     {

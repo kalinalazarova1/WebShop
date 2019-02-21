@@ -9,7 +9,7 @@ namespace WebShop.Web.MappingProfiles
         public PhotoProfile()
         {
             CreateMap<Photo, PhotoModel>();
-            CreateMap<PhotoModel, Photo>();
+            CreateMap<PhotoModel, Photo>().IgnoreAllPropertiesWithAnInaccessibleSetter();
         }
     }
 }
