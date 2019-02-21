@@ -170,5 +170,12 @@ namespace WebShop.Web.Controllers
 
             return BadRequest();
         }
+
+        [HttpGet("{id}/stocks", Name = "GetStockEntriesForProduct")]
+        public IActionResult GetByProduct(int id)
+        {
+            var items = mapper.Map<List<StockEntryModel>>(ctx.Stock.Where(s => s.ProductId == id).OrderByDescending(s => s.Date));
+            return Ok(items);
+        }
     }
 }

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using WebShop.Data;
 using WebShop.Models.Entities;
 using WebShop.Web.ViewModels;
@@ -28,21 +29,14 @@ namespace WebShop.Web.Controllers
         [HttpGet]
         public IActionResult Get()
         {
-            var items = mapper.Map<List<StockEntryModel>>(ctx.Stock.ToList());
-            return Ok(items);
-        }
-
-        [HttpGet("{productid}", Name = "StockEntryGetByProduct")]
-        public IActionResult GetByProduct(int productId)
-        {
-            var items = mapper.Map<StockEntryModel>(ctx.Stock.Where(s => s.ProductId == productId).OrderByDescending(s => s.Date));
+            var items = mapper.Map<List<StockEntryModel>>(ctx.Stock.Include(s => s.Product).ToList());
             return Ok(items);
         }
 
         [HttpGet("{id}", Name = "StockEntryGet")]
         public IActionResult Get(int id)
         {
-            var item = mapper.Map<StockEntryModel>(ctx.Stock.FirstOrDefault(m => m.Id == id));
+            var item = mapper.Map<StockEntryModel>(ctx.Stock.Include(s => s.Product).FirstOrDefault(m => m.Id == id));
             return Ok(item);
         }
 
@@ -56,7 +50,7 @@ namespace WebShop.Web.Controllers
             if (await this.ctx.SaveChangesAsync() > 0)
             {
                 var url = Url.Link("StockEntryGet", new { id = entry.Id });
-                return Created(url, model);
+                return Created(url, mapper.Map<StockEntryModel>(entry));
             }
 
             return BadRequest();
