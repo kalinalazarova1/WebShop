@@ -48,7 +48,8 @@ namespace WebShop.Web.Controllers
             if (await this.ctx.SaveChangesAsync() > 0)
             {
                 var url = Url.Link("ProductGet", new { id = newProduct.Id });
-                return Created(url, model);
+                var outputModel = mapper.Map<ProductModel>(newProduct);
+                return Created(url, outputModel);
             }
 
             return BadRequest();
@@ -139,6 +140,7 @@ namespace WebShop.Web.Controllers
             if (await this.ctx.SaveChangesAsync() > 0)
             {
                 var url = Url.Link("PhotoGet", new { id = id, photoid = newPhoto.Id });
+                model.Id = newPhoto.Id;
                 return Created(url, model);
             }
 

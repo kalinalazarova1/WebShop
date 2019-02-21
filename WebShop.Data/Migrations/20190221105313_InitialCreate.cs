@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace WebShop.Data.Migrations
 {
-    public partial class Initial : Migration
+    public partial class InitialCreate : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -53,7 +53,7 @@ namespace WebShop.Data.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    Symbol = table.Column<string>(nullable: true)
+                    Symbol = table.Column<string>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -172,7 +172,7 @@ namespace WebShop.Data.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    AppUserId = table.Column<string>(nullable: true),
+                    AppUserId = table.Column<string>(nullable: false),
                     Date = table.Column<DateTime>(nullable: false)
                 },
                 constraints: table =>
@@ -183,7 +183,7 @@ namespace WebShop.Data.Migrations
                         column: x => x.AppUserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -192,11 +192,12 @@ namespace WebShop.Data.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    Title = table.Column<string>(nullable: true),
+                    Title = table.Column<string>(nullable: false),
                     Description = table.Column<string>(nullable: true),
-                    PricePerUnit = table.Column<decimal>(nullable: false),
+                    PricePerUnit = table.Column<decimal>(type: "decimal(18, 2)", nullable: false),
                     MeasureId = table.Column<int>(nullable: false),
-                    CurrentStock = table.Column<decimal>(nullable: false)
+                    CurrentStock = table.Column<decimal>(type: "decimal(18, 2)", nullable: false),
+                    CurrentCost = table.Column<decimal>(type: "decimal(18, 2)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -216,9 +217,9 @@ namespace WebShop.Data.Migrations
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     ProductId = table.Column<int>(nullable: false),
-                    AppUserId = table.Column<string>(nullable: true),
-                    Units = table.Column<decimal>(nullable: false),
-                    Amount = table.Column<decimal>(nullable: false)
+                    AppUserId = table.Column<string>(nullable: false),
+                    Units = table.Column<decimal>(type: "decimal(18, 2)", nullable: false),
+                    Amount = table.Column<decimal>(type: "decimal(18, 2)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -228,7 +229,7 @@ namespace WebShop.Data.Migrations
                         column: x => x.AppUserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_BasketItems_Products_ProductId",
                         column: x => x.ProductId,
@@ -265,9 +266,9 @@ namespace WebShop.Data.Migrations
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     OrderId = table.Column<int>(nullable: false),
                     ProductId = table.Column<int>(nullable: false),
-                    Units = table.Column<decimal>(nullable: false),
-                    Amount = table.Column<decimal>(nullable: false),
-                    Cost = table.Column<decimal>(nullable: false)
+                    Units = table.Column<decimal>(type: "decimal(18, 2)", nullable: false),
+                    Amount = table.Column<decimal>(type: "decimal(18, 2)", nullable: false),
+                    Cost = table.Column<decimal>(type: "decimal(18, 2)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -295,8 +296,8 @@ namespace WebShop.Data.Migrations
                     Date = table.Column<DateTime>(nullable: false),
                     StockEntryType = table.Column<int>(nullable: false),
                     ProductId = table.Column<int>(nullable: false),
-                    Units = table.Column<decimal>(nullable: false),
-                    Amount = table.Column<decimal>(nullable: false)
+                    Units = table.Column<decimal>(type: "decimal(18, 2)", nullable: false),
+                    Amount = table.Column<decimal>(type: "decimal(18, 2)", nullable: false)
                 },
                 constraints: table =>
                 {

@@ -42,9 +42,11 @@ namespace WebShop.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromBody]MeasureModel model)
         {
-            this.ctx.Add(mapper.Map<Measure>(model));
+            var entity = mapper.Map<Measure>(model);
+            this.ctx.Add(entity);
             if (await this.ctx.SaveChangesAsync() > 0)
             {
+                model.Id = entity.Id;
                 var url = Url.Link("MeasureGet", new { id = model.Id });
                 return Created(url, model);
             }
@@ -82,7 +84,7 @@ namespace WebShop.Web.Controllers
             this.ctx.Measures.Remove(measure);
             if (await this.ctx.SaveChangesAsync() > 0)
             {
-                return Ok();
+                return NoContent();
             }
 
             return BadRequest();

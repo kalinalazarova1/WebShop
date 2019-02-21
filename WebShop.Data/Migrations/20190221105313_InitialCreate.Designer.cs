@@ -10,8 +10,8 @@ using WebShop.Data;
 namespace WebShop.Data.Migrations
 {
     [DbContext(typeof(WebShopContext))]
-    [Migration("20190209191157_Initial")]
-    partial class Initial
+    [Migration("20190221105313_InitialCreate")]
+    partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -188,13 +188,16 @@ namespace WebShop.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<decimal>("Amount");
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("decimal(18, 2)");
 
-                    b.Property<string>("AppUserId");
+                    b.Property<string>("AppUserId")
+                        .IsRequired();
 
                     b.Property<int>("ProductId");
 
-                    b.Property<decimal>("Units");
+                    b.Property<decimal>("Units")
+                        .HasColumnType("decimal(18, 2)");
 
                     b.HasKey("Id");
 
@@ -211,7 +214,8 @@ namespace WebShop.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("Symbol");
+                    b.Property<string>("Symbol")
+                        .IsRequired();
 
                     b.HasKey("Id");
 
@@ -224,7 +228,8 @@ namespace WebShop.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("AppUserId");
+                    b.Property<string>("AppUserId")
+                        .IsRequired();
 
                     b.Property<DateTime>("Date");
 
@@ -258,15 +263,21 @@ namespace WebShop.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<decimal>("CurrentStock");
+                    b.Property<decimal>("CurrentCost")
+                        .HasColumnType("decimal(18, 2)");
+
+                    b.Property<decimal>("CurrentStock")
+                        .HasColumnType("decimal(18, 2)");
 
                     b.Property<string>("Description");
 
                     b.Property<int>("MeasureId");
 
-                    b.Property<decimal>("PricePerUnit");
+                    b.Property<decimal>("PricePerUnit")
+                        .HasColumnType("decimal(18, 2)");
 
-                    b.Property<string>("Title");
+                    b.Property<string>("Title")
+                        .IsRequired();
 
                     b.HasKey("Id");
 
@@ -281,15 +292,18 @@ namespace WebShop.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<decimal>("Amount");
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("decimal(18, 2)");
 
-                    b.Property<decimal>("Cost");
+                    b.Property<decimal>("Cost")
+                        .HasColumnType("decimal(18, 2)");
 
                     b.Property<int>("OrderId");
 
                     b.Property<int>("ProductId");
 
-                    b.Property<decimal>("Units");
+                    b.Property<decimal>("Units")
+                        .HasColumnType("decimal(18, 2)");
 
                     b.HasKey("Id");
 
@@ -306,7 +320,8 @@ namespace WebShop.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<decimal>("Amount");
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("decimal(18, 2)");
 
                     b.Property<DateTime>("Date");
 
@@ -314,7 +329,8 @@ namespace WebShop.Data.Migrations
 
                     b.Property<int>("StockEntryType");
 
-                    b.Property<decimal>("Units");
+                    b.Property<decimal>("Units")
+                        .HasColumnType("decimal(18, 2)");
 
                     b.HasKey("Id");
 
@@ -372,7 +388,8 @@ namespace WebShop.Data.Migrations
                 {
                     b.HasOne("WebShop.Models.Entities.AppUser", "Buyer")
                         .WithMany("Basket")
-                        .HasForeignKey("AppUserId");
+                        .HasForeignKey("AppUserId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("WebShop.Models.Entities.Product", "Product")
                         .WithMany()
@@ -384,7 +401,8 @@ namespace WebShop.Data.Migrations
                 {
                     b.HasOne("WebShop.Models.Entities.AppUser", "Buyer")
                         .WithMany("Orders")
-                        .HasForeignKey("AppUserId");
+                        .HasForeignKey("AppUserId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("WebShop.Models.Entities.Photo", b =>

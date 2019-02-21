@@ -12,8 +12,6 @@
 
         public decimal Units { get; set; }
 
-        public int MeasureId { get; set; }
-
         public decimal Amount { get; set; }
     }
 }

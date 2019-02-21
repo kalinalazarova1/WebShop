@@ -70,6 +70,8 @@ namespace WebShop.Data
                     new Measure { Symbol = "m" },
                     new Measure { Symbol = "cm" }
                 });
+
+                await ctx.SaveChangesAsync();
             }
 
             if (!ctx.Products.Any())

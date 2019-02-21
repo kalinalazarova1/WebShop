@@ -61,7 +61,6 @@ namespace WebShop.Web.Controllers
                     Amount = item.Product.PricePerUnit * item.Units,
                     ProductId = item.ProductId,
                     Units = item.Units,
-                    MeasureId = item.Product.MeasureId,
                     Order = order,
                     Cost = (item.Product.CurrentCost / item.Product.CurrentStock) * item.Units
                 });

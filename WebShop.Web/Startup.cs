@@ -36,6 +36,7 @@ namespace WebShop.Web
                     {
                         cfg.User.RequireUniqueEmail = true;
                     })
+                    .AddRoles<IdentityRole>()
                     .AddEntityFrameworkStores<WebShopContext>()
                     .AddDefaultTokenProviders();
 
