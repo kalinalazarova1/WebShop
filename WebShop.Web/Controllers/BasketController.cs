@@ -22,7 +22,7 @@ namespace WebShop.Web.Controllers
         private readonly WebShopContext ctx;
         private readonly IMapper mapper;
         private readonly UserManager<AppUser> userManager;
-        private readonly string userId;
+        private string userId;
 
         public BasketController(WebShopContext ctx, IMapper mapper, UserManager<AppUser> userManager)
         {
@@ -35,7 +35,8 @@ namespace WebShop.Web.Controllers
         {
             get
             {
-                return userId ?? GetUserId();
+                userId = userId ?? User.FindFirst(ClaimTypes.NameIdentifier).Value;
+                return userId;
             }
         }
 
@@ -137,7 +138,5 @@ namespace WebShop.Web.Controllers
 
             return BadRequest();
         }
-
-        private string GetUserId() => User.FindFirst(ClaimTypes.NameIdentifier).Value;
     }
 }

@@ -20,71 +20,108 @@ namespace WebShop.Web.Controllers
     {
         private readonly WebShopContext ctx;
         private readonly IMapper mapper;
-        private readonly string userId;
+        private string userId;
 
         public OrdersController(WebShopContext ctx, IMapper mapper)
         {
             this.ctx = ctx;
             this.mapper = mapper;
-            this.userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        }
+
+        public string UserId
+        {
+            get
+            {
+                userId = userId ?? User.FindFirst(ClaimTypes.NameIdentifier).Value;
+                return userId;
+            }
         }
 
         [HttpGet]
         public IActionResult Get()
         {
-            var orders = mapper.Map<List<OrderModel>>(ctx.Orders.Where(o => o.AppUserId == userId).ToList());
+            var orders = mapper.Map<List<OrderModel>>(ctx.Orders
+                .Where(o => o.AppUserId == UserId)
+                .Include(o => o.OrderLines)
+                .ThenInclude(o => o.Product)
+                .ToList());
             return Ok(orders);
         }
 
         [HttpGet("{id}", Name = "OrderGet")]
         public IActionResult Get(int id)
         {
-            var order = mapper.Map<OrderModel>(ctx.Orders.FirstOrDefault(o => o.Id == id && o.AppUserId == userId));
+            var order = mapper.Map<OrderModel>(ctx.Orders
+                .Where(o => o.Id == id && o.AppUserId == UserId)
+                .Include(o => o.OrderLines)
+                .ThenInclude(o => o.Product)
+                .FirstOrDefault());
             return Ok(order);
         }
 
         [HttpPost]
         public async Task<IActionResult> Create()
         {
-            //check availablity of products
-            var order = new Order
+            await ctx.Database.BeginTransactionAsync();
+            try
             {
-                AppUserId = userId,
-                Date = DateTime.UtcNow,
-            };
-
-            ctx.Orders.Add(order);
-            var basket = ctx.BasketItems.Include(b => b.Product).Where(i => i.AppUserId == userId);
-            foreach (var item in basket)
-            {
-                ctx.SaleItems.Add(new SaleItem
+                var order = new Order
                 {
-                    Amount = item.Product.PricePerUnit * item.Units,
-                    ProductId = item.ProductId,
-                    Units = item.Units,
-                    Order = order,
-                    Cost = (item.Product.CurrentCost / item.Product.CurrentStock) * item.Units
-                });
-
-                ctx.Stock.Add(new StockEntry
-                {
+                    AppUserId = UserId,
                     Date = DateTime.UtcNow,
-                    ProductId = item.ProductId,
-                    StockEntryType = StockEntryType.Sell,
-                    Units = item.Units,
-                    Amount = (item.Product.CurrentCost / item.Product.CurrentStock) * item.Units
-                });
+                };
 
-                ctx.BasketItems.Remove(item);
-            }
+                ctx.Orders.Add(order);
+                var basket = ctx.BasketItems.Include(b => b.Product).Where(i => i.AppUserId == UserId);
+                foreach (var item in basket)
+                {
+                    ctx.SaleItems.Add(new SaleItem
+                    {
+                        Amount = item.Product.PricePerUnit * item.Units,
+                        ProductId = item.ProductId,
+                        Units = item.Units,
+                        Order = order,
+                        Cost = (item.Product.CurrentCost / item.Product.CurrentStock) * item.Units
+                    });
 
-            if (await this.ctx.SaveChangesAsync() > 0)
-            {
+                    ctx.Stock.Add(new StockEntry
+                    {
+                        Date = DateTime.UtcNow,
+                        ProductId = item.ProductId,
+                        StockEntryType = StockEntryType.Sell,
+                        Units = item.Units,
+                        Amount = (item.Product.CurrentCost / item.Product.CurrentStock) * item.Units
+                    });
+
+                    var product = ctx.Products.FirstOrDefault(p => p.Id == item.ProductId);
+                    if (product == null)
+                    {
+                        return BadRequest($"Product unavailable: {item.Product.Title}");
+                    }
+
+                    product.CurrentCost -= item.Product.CurrentCost / product.CurrentStock * item.Units;
+                    product.CurrentStock -= item.Units;
+                    if(product.CurrentStock < 0)
+                    {
+                        return BadRequest($"Product unavailable: {item.Product.Title}");
+                    }
+
+                    ctx.BasketItems.Remove(item);
+                    if(await ctx.SaveChangesAsync() == 0)
+                    {
+                        return BadRequest();
+                    }
+                }
+
                 var url = Url.Link("OrderGet", new { id = order.Id });
-                return Created(url, order);
+                ctx.Database.CommitTransaction();
+                return Created(url, mapper.Map<OrderModel>(order));
             }
-
-            return BadRequest();
+            catch (Exception)
+            {
+                ctx.Database.RollbackTransaction();
+                return BadRequest();
+            }
         }
 
         [HttpDelete("{id}")]
@@ -108,7 +145,7 @@ namespace WebShop.Web.Controllers
 
             if (await this.ctx.SaveChangesAsync() > 0)
             {
-                return Ok();
+                return NoContent();
             }
 
             return BadRequest();
