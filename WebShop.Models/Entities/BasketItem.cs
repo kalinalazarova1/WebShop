@@ -20,8 +20,5 @@ namespace WebShop.Models.Entities
 
         [Column(TypeName = "decimal(18, 2)")]
         public decimal Units { get; set; }
-
-        [Column(TypeName = "decimal(18, 2)")]
-        public decimal Amount { get; set; }
     }
 }

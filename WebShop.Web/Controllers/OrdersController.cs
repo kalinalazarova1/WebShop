@@ -46,6 +46,7 @@ namespace WebShop.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> Create()
         {
+            //check availablity of products
             var order = new Order
             {
                 AppUserId = userId,

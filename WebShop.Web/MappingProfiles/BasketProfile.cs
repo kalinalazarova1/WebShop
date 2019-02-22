@@ -8,8 +8,8 @@ namespace WebShop.Web.MappingProfiles
     {
         public BasketProfile()
         {
-            CreateMap<BasketItem, BasketItemModel>();
-            CreateMap<BasketItemModel, BasketItem>().IgnoreAllPropertiesWithAnInaccessibleSetter();
+            CreateMap<BasketItem, BasketItemModel>().ForMember(m => m.Amount, opt => opt.MapFrom(src => src.Product.PricePerUnit * src.Units));
+            CreateMap<BasketItemInputModel, BasketItem>().IgnoreAllPropertiesWithAnInaccessibleSetter();
         }
     }
 }

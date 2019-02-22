@@ -42,6 +42,7 @@ namespace WebShop.Web.Controllers
                     var claims = new[]
                     {
                         new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                        new Claim(ClaimTypes.NameIdentifier, user.Id),
                         new Claim(JwtRegisteredClaimNames.Sub, model.Username)
                     };
 
