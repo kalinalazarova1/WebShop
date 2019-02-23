@@ -12,21 +12,36 @@ namespace WebShop.Data
         private RoleManager<IdentityRole> roleManager;
         private UserManager<AppUser> userManager;
         private WebShopContext ctx;
-        private Guid[] userIds;
+        private Guid userId;
 
         public Seeder(UserManager<AppUser> userManager, RoleManager<IdentityRole> roleManager, WebShopContext ctx)
         {
             this.userManager = userManager;
             this.roleManager = roleManager;
             this.ctx = ctx;
-            this.userIds = new Guid[] { Guid.NewGuid(), Guid.NewGuid() };
+            this.userId = Guid.NewGuid();
         }
 
         public async Task Seed()
         {
+            await SeedRoles();
             await SeedUser("kalina.lazarova@gmail.com", 0);
-            await SeedUser("peter.ivanov@gmail.com", 1);
             await SeedProducts();
+        }
+
+        private async Task SeedRoles()
+        {
+            if (!(await roleManager.RoleExistsAsync("Admin")))
+            {
+                var role = new IdentityRole("Admin");
+                await roleManager.CreateAsync(role);
+            }
+
+            if (!(await roleManager.RoleExistsAsync("User")))
+            {
+                var role = new IdentityRole("User");
+                await roleManager.CreateAsync(role);
+            }
         }
 
         private async Task SeedUser(string email, int index)
@@ -35,17 +50,11 @@ namespace WebShop.Data
 
             if (user == null)
             {
-                if (!(await roleManager.RoleExistsAsync("Admin")))
-                {
-                    var role = new IdentityRole("Admin");
-                    await roleManager.CreateAsync(role);
-                }
-
                 user = new AppUser()
                 {
                     UserName = email,
                     Email = email,
-                    Id = this.userIds[index].ToString()
+                    Id = userId.ToString()
                 };
 
                 var userResult = await userManager.CreateAsync(user, "Kalina1@");

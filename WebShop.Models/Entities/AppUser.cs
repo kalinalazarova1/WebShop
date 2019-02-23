@@ -5,6 +5,10 @@ namespace WebShop.Models.Entities
 {
     public class AppUser : IdentityUser
     {
+        public string Name { get; set; }
+
+        public string Surname { get; set; }
+
         public HashSet<BasketItem> Basket { get; set; } = new HashSet<BasketItem>();
 
         public HashSet<Order> Orders { get; set; } = new HashSet<Order>();

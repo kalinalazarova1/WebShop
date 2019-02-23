@@ -125,6 +125,7 @@ namespace WebShop.Web.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int id)
         {
             var order = await ctx.Orders.FindAsync(id);
