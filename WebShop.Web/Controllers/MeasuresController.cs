@@ -12,7 +12,7 @@ namespace WebShop.Web.Controllers
 {
     [Produces("application/json")]
     [Route("api/[controller]")]
-    [Authorize]
+    [Authorize("User")]
     [ApiController]
     public class MeasuresController : ControllerBase
     {

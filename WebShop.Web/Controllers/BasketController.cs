@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebShop.Data;
 using WebShop.Models.Entities;
+using WebShop.Web.Filters;
 using WebShop.Web.ViewModels;
 
 namespace WebShop.Web.Controllers
@@ -61,6 +62,7 @@ namespace WebShop.Web.Controllers
         }
 
         [HttpPost]
+        [ValidateModel]
         public async Task<IActionResult> Create([FromBody]BasketItemInputModel model)
         {
             var entity = mapper.Map<BasketItem>(model);
@@ -77,7 +79,8 @@ namespace WebShop.Web.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, [FromBody]BasketItemModel model)
+        [ValidateModel]
+        public async Task<IActionResult> Update(int id, [FromBody]BasketItemInputModel model)
         {
             var oldBasketItem = ctx.BasketItems
                 .Where(b => b.Id == id && b.AppUserId == UserId)

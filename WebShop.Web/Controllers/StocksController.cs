@@ -13,7 +13,7 @@ using WebShop.Web.ViewModels;
 namespace WebShop.Web.Controllers
 {
     [Route("api/[controller]")]
-    [Authorize]
+    [Authorize(Roles = "Admin")]
     [ApiController]
     public class StocksController : ControllerBase
     {

@@ -41,6 +41,7 @@ namespace WebShop.Web.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create([FromBody]ProductInputModel model)
         {
             var newProduct = mapper.Map<Product>(model);
@@ -56,6 +57,7 @@ namespace WebShop.Web.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Update(int id, [FromBody]ProductInputModel model)
         {
             var oldProduct = this.ctx.Products.FirstOrDefault(m => m.Id == id);
@@ -78,6 +80,7 @@ namespace WebShop.Web.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int id)
         {
             var product = this.ctx.Products.FirstOrDefault(m => m.Id == id);
@@ -127,6 +130,7 @@ namespace WebShop.Web.Controllers
         }
 
         [HttpPost("{id}/photos")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> AddPhoto(int id, [FromBody]PhotoModel model)
         {
             var product = this.ctx.Products.FirstOrDefault(m => m.Id == id);
@@ -148,6 +152,7 @@ namespace WebShop.Web.Controllers
         }
 
         [HttpDelete("{id}/photos/{photoid}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeletePhoto(int id, int photoid)
         {
             var product = this.ctx.Products.Include(p => p.Photos).FirstOrDefault(m => m.Id == id);
@@ -172,6 +177,7 @@ namespace WebShop.Web.Controllers
         }
 
         [HttpGet("{id}/stocks", Name = "GetStockEntriesForProduct")]
+        [Authorize(Roles = "Admin")]
         public IActionResult GetByProduct(int id)
         {
             var items = mapper.Map<List<StockEntryModel>>(ctx.Stock.Where(s => s.ProductId == id).OrderByDescending(s => s.Date));
