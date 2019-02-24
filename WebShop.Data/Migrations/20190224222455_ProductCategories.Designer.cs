@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WebShop.Data;
 
 namespace WebShop.Data.Migrations
 {
     [DbContext(typeof(WebShopContext))]
-    partial class WebShopContextModelSnapshot : ModelSnapshot
+    [Migration("20190224222455_ProductCategories")]
+    partial class ProductCategories
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -207,24 +209,6 @@ namespace WebShop.Data.Migrations
                     b.ToTable("BasketItems");
                 });
 
-            modelBuilder.Entity("WebShop.Models.Entities.Category", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int?>("ParentId");
-
-                    b.Property<string>("Title")
-                        .IsRequired();
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ParentId");
-
-                    b.ToTable("Categories");
-                });
-
             modelBuilder.Entity("WebShop.Models.Entities.Measure", b =>
                 {
                     b.Property<int>("Id")
@@ -299,8 +283,6 @@ namespace WebShop.Data.Migrations
                         .IsRequired();
 
                     b.HasKey("Id");
-
-                    b.HasIndex("CategoryId");
 
                     b.HasIndex("MeasureId");
 
@@ -418,13 +400,6 @@ namespace WebShop.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("WebShop.Models.Entities.Category", b =>
-                {
-                    b.HasOne("WebShop.Models.Entities.Category", "Parent")
-                        .WithMany()
-                        .HasForeignKey("ParentId");
-                });
-
             modelBuilder.Entity("WebShop.Models.Entities.Order", b =>
                 {
                     b.HasOne("WebShop.Models.Entities.AppUser", "Buyer")
@@ -443,11 +418,6 @@ namespace WebShop.Data.Migrations
 
             modelBuilder.Entity("WebShop.Models.Entities.Product", b =>
                 {
-                    b.HasOne("WebShop.Models.Entities.Category")
-                        .WithMany("Products")
-                        .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
                     b.HasOne("WebShop.Models.Entities.Measure", "Measure")
                         .WithMany()
                         .HasForeignKey("MeasureId")

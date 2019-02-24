@@ -83,14 +83,25 @@ namespace WebShop.Data
                 await ctx.SaveChangesAsync();
             }
 
+            if (!ctx.Categories.Any())
+            {
+                ctx.AddRange(new List<Category>
+                {
+                    new Category { Title = "General" }
+                });
+
+                await ctx.SaveChangesAsync();
+            }
+
             if (!ctx.Products.Any())
             {
                 var measureId = ctx.Measures.First(m => m.Symbol == "pcs").Id;
+                var categoryId = ctx.Categories.First().Id;
                 ctx.AddRange(new List<Product>
                 {
-                    new Product { Title = "Socks", MeasureId = measureId, PricePerUnit = 2m },
-                    new Product { Title = "Pants", MeasureId = measureId, PricePerUnit = 5m },
-                    new Product { Title = "Vests", MeasureId = measureId, PricePerUnit = 3m }
+                    new Product { Title = "Socks", MeasureId = measureId, PricePerUnit = 2m, CategoryId = categoryId },
+                    new Product { Title = "Pants", MeasureId = measureId, PricePerUnit = 5m, CategoryId = categoryId },
+                    new Product { Title = "Vests", MeasureId = measureId, PricePerUnit = 3m, CategoryId = categoryId }
                 });
 
                 await ctx.SaveChangesAsync();

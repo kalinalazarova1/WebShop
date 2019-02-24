@@ -15,6 +15,8 @@ namespace WebShop.Models.Entities
 
         public string Description { get; set; }
 
+        public int CategoryId { get; set; }
+
         [Column(TypeName = "decimal(18, 2)")]
         public decimal PricePerUnit { get; set; }
 
