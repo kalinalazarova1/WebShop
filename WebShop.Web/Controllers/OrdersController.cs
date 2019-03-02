@@ -61,8 +61,8 @@ namespace WebShop.Web.Controllers
             return Ok(order);
         }
 
-        [HttpPost("{addressId}")]
-        public async Task<IActionResult> Create(int addressId)
+        [HttpPost("address/{id}")]
+        public async Task<IActionResult> Create(int id)
         {
             await ctx.Database.BeginTransactionAsync();
             try
@@ -71,7 +71,7 @@ namespace WebShop.Web.Controllers
                 {
                     AppUserId = UserId,
                     Date = DateTime.UtcNow,
-                    AddressId = addressId
+                    AddressId = id
                 };
 
                 ctx.Orders.Add(order);
