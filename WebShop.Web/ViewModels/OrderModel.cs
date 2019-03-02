@@ -11,6 +11,10 @@ namespace WebShop.Web.ViewModels
 
         public DateTime Date { get; set; }
 
+        public int AddressId { get; set; }
+
+        public AddressModel Address { get; set; }
+
         public HashSet<SaleItemModel> OrderLines { get; set; } = new HashSet<SaleItemModel>();
     }
 }

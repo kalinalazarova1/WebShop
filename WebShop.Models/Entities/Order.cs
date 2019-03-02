@@ -17,6 +17,10 @@ namespace WebShop.Models.Entities
 
         public DateTime Date { get; set; }
 
+        public int AddressId { get; set; }
+
+        public Address Address { get; set; }
+
         public HashSet<SaleItem> OrderLines { get; set; } = new HashSet<SaleItem>();
     }
 }

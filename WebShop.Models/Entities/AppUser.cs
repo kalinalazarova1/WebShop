@@ -12,5 +12,7 @@ namespace WebShop.Models.Entities
         public HashSet<BasketItem> Basket { get; set; } = new HashSet<BasketItem>();
 
         public HashSet<Order> Orders { get; set; } = new HashSet<Order>();
+
+        public HashSet<Address> DeliveryAdresses { get; set; } = new HashSet<Address>();
     }
 }

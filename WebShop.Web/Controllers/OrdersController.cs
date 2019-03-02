@@ -42,6 +42,7 @@ namespace WebShop.Web.Controllers
         {
             var orders = mapper.Map<List<OrderModel>>(ctx.Orders
                 .Where(o => o.AppUserId == UserId)
+                .Include(o => o.Address)
                 .Include(o => o.OrderLines)
                 .ThenInclude(o => o.Product)
                 .ToList());
@@ -53,14 +54,15 @@ namespace WebShop.Web.Controllers
         {
             var order = mapper.Map<OrderModel>(ctx.Orders
                 .Where(o => o.Id == id && o.AppUserId == UserId)
+                .Include(o => o.Address)
                 .Include(o => o.OrderLines)
                 .ThenInclude(o => o.Product)
                 .FirstOrDefault());
             return Ok(order);
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Create()
+        [HttpPost("{addressId}")]
+        public async Task<IActionResult> Create(int addressId)
         {
             await ctx.Database.BeginTransactionAsync();
             try
@@ -69,6 +71,7 @@ namespace WebShop.Web.Controllers
                 {
                     AppUserId = UserId,
                     Date = DateTime.UtcNow,
+                    AddressId = addressId
                 };
 
                 ctx.Orders.Add(order);
